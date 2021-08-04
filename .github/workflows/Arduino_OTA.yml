@@ -65,7 +65,7 @@ jobs:
           cat ./src/configs.h
 
       - name: Build firmware
-        run: platformio run -d 
+        run: platformio run -d .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
