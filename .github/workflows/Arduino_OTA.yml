@@ -76,7 +76,7 @@ jobs:
           
   Release:
     needs: Build
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
      
       - name: Download artifact
@@ -84,6 +84,9 @@ jobs:
         with:
           name: ${{ needs.Build.outputs.appName}}.bin
           path: /var/www/html/firmware/
+
+      - name: Install Jq
+        run: apt update && apt install jq -y
         
       - name: Move file to release folder
         run: |
