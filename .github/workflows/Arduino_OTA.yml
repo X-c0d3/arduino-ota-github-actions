@@ -83,21 +83,21 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: ${{ needs.Build.outputs.appName}}.bin
-          path: /var/www/html/firmware/
+          path: /home/admin/web/rockdevper.com/public_html/firmware2/
 
       - name: Install Jq
         run: apt update && apt install jq -y
         
       - name: Move file to release folder
         run: |
-          cd /var/www/html/firmware/
+          cd /home/admin/web/rockdevper.com/public_html/firmware2/
           mv firmware.bin $(echo ${{ needs.Build.outputs.appName}} | tr '[A-Z]' '[a-z]').bin
           ls -la .
           
       # makesure your installed jq. (For linux : apt install jq or yum install jq)    
       - name: Update firmware.json
         run: |
-          cd /var/www/html/firmware/
+          cd /home/admin/web/rockdevper.com/public_html/firmware2/
           cat firmware.json | jq '(.devices[] | select(.deviceName=="${{needs.Build.outputs.appName}}") | .version) |= "${{needs.Build.outputs.version}}"' > firmware.json
           cat ./firmware.json
           
