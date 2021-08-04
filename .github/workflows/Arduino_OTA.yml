@@ -86,7 +86,7 @@ jobs:
           path: /home/admin/web/rockdevper.com/public_html/firmware2/
 
       - name: Install Jq
-        run: yum update && yum install jq -y # For CentOS
+        run: yum install jq -y # For CentOS
         #run: apt update && apt install jq -y # For Ubuntu
         
       - name: Move file to release folder
