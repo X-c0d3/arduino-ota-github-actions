@@ -57,7 +57,6 @@ jobs:
           FIRMWARE_SERVER: ${{ secrets.FIRMWARE_SERVER }}
           FIRMWARE_VERSION: ${{ steps.config.outputs.version }}
           FIRMWARE_LASTUPDATE: ${{ steps.date.outputs.date }}
-          EMAIL: ${{ env.config_email }}
           DEVICE_NAME: ${{ env.appName }}
       
       - name: Recheck configuration file
@@ -67,11 +66,19 @@ jobs:
       - name: Build firmware
         run: platformio run -d .
 
-      - name: Upload artifact
+      - name: Upload artifact firmware.bin
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.appName }}.bin
+          name: ${{ env.appName }}
           path: .pio/build/nodemcu-32s/firmware.bin
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn`
+            
+      - name: Update artifact firmware.json
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.appName }}
+          path: ./src/firmware.json
+          if-no-files-found: error # 'warn' or 'ignore' are also available, defaults to `warn` 
       
           
   Release:
@@ -84,25 +91,14 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@master
         with:
-          name: ${{ needs.Build.outputs.appName}}.bin
+          name: ${{ needs.Build.outputs.appName}}
           path: ${{ env.ReleasePath }}
-
-      - name: Install Jq
-        run: yum install jq -y # For CentOS
-        #run: apt update && apt install jq -y # For Ubuntu
         
       - name: Move file to release folder
         run: |
           cd ${{ env.ReleasePath }}
           mv firmware.bin $(echo ${{ needs.Build.outputs.appName}} | tr '[A-Z]' '[a-z]').bin
           ls -la .
-          
-      # makesure your installed jq. (For linux : apt install jq or yum install jq)    
-      - name: Update firmware.json
-        run: |
-          cd ${{ env.ReleasePath }}
-          cat firmware.json | jq '(.devices[] | select(.deviceName=="${{needs.Build.outputs.appName}}") | .version) |= "${{needs.Build.outputs.version}}"' > firmware.json
-          cat ./firmware.json
           
       - name: Tag Repo
         uses: richardsimko/update-tag@v1
