@@ -77,13 +77,15 @@ jobs:
   Release:
     needs: Build
     runs-on: self-hosted
+    env:
+      ReleasePath: /var/www/html/firmware/
     steps:
      
       - name: Download artifact
         uses: actions/download-artifact@master
         with:
           name: ${{ needs.Build.outputs.appName}}.bin
-          path: /home/admin/web/rockdevper.com/public_html/firmware2/
+          path: ${{ env.ReleasePath }}
 
       - name: Install Jq
         run: yum install jq -y # For CentOS
@@ -91,14 +93,14 @@ jobs:
         
       - name: Move file to release folder
         run: |
-          cd /home/admin/web/rockdevper.com/public_html/firmware2/
+          cd ${{ env.ReleasePath }}
           mv firmware.bin $(echo ${{ needs.Build.outputs.appName}} | tr '[A-Z]' '[a-z]').bin
           ls -la .
           
       # makesure your installed jq. (For linux : apt install jq or yum install jq)    
       - name: Update firmware.json
         run: |
-          cd /home/admin/web/rockdevper.com/public_html/firmware2/
+          cd ${{ env.ReleasePath }}
           cat firmware.json | jq '(.devices[] | select(.deviceName=="${{needs.Build.outputs.appName}}") | .version) |= "${{needs.Build.outputs.version}}"' > firmware.json
           cat ./firmware.json
           
