@@ -22,7 +22,7 @@ void OnProgress(int progress, int totalt) {
     last = firmwareUpgradeProgress;
 }
 
-void updateFirmware() {
+bool updateFirmware(void *) {
     Serial.println("Checking for firmware updates.");
     Serial.println("Current Version: " + String(FIRMWARE_VERSION));
 
@@ -40,7 +40,7 @@ void updateFirmware() {
         DeserializationError error = deserializeJson(doc, http.getString());
         //JsonObject &root = jsonBuffer.parseObject(http.getString());
         if (error)
-            return;
+            return false;
 
         String newVersion = "";
         String firmwareUrl = "";
@@ -53,7 +53,7 @@ void updateFirmware() {
                 break;
             }
         }
-        if (newVersion == "") return;
+        if (newVersion == "") return false;
         Serial.println("Device Name: " + deviceName);
         Serial.println("Firmware URL: " + firmwareUrl);
         Serial.println("Next version: " + newVersion);
@@ -89,10 +89,6 @@ void updateFirmware() {
             }
         }
     }
-}
-
-bool firmwareUpdate(void *) {
-    updateFirmware();
     return true;
 }
 

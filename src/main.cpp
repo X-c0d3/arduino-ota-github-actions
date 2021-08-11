@@ -202,7 +202,7 @@ void setup() {
         timer.every(DEFAULT_INTERVAL, readData);
 
         if (ENABLE_FIRMWARE_AUTOUPDATE)
-            timer.every(CHECK_FIRMWARE_INTERVAL, firmwareUpdate);
+            timer.every(CHECK_FIRMWARE_INTERVAL, updateFirmware);
 
         setupWatchDog();
     }
